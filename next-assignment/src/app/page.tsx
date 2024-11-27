@@ -7,19 +7,7 @@ import FormBtn from "./components/FormButton";
 import Message from "./components/Message";
 
 export default function Home() {
-    const [state, action] = useActionState(handleLoginForm, {
-        success: false,
-        data: {
-            email: "",
-            username: "",
-            password: "",
-        },
-        fieldErrors: {
-            email: [],
-            username: [],
-            password: [],
-        },
-    });
+    const [state, action] = useActionState(handleLoginForm, null);
 
     return (
         <div className="w-full h-screen flex flex-col items-center justify-center gap-4">

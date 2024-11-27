@@ -7,28 +7,17 @@ const checkEmail = (email: string) => email.includes("@zod.com");
 const formSchema = z.object({
     email: z.string().email().refine(checkEmail, { message: "Only @zod.com email is allowed" }),
     username: z.string().min(5, { message: "Username must be at least 5 characters long" }),
-    password: z.string().min(10, { message: "Password must be at least 10 characters long" }),
+    password: z
+        .string()
+        .min(10, { message: "Password must be at least 10 characters long" })
+        .refine((data) => /[0-9]/.test(data), { message: "Password must include at least one number" }),
 });
 
-type FormState = {
-    success: boolean;
-    data?: {
-        email: string | null;
-        username: string | null;
-        password: string | null;
-    };
-    fieldErrors?: {
-        email?: string[];
-        username?: string[];
-        password?: string[];
-    };
-};
-
-export default async function handleLoginForm(prevState: FormState, formData: FormData): Promise<FormState> {
+export default async function handleLoginForm(prevState: any, formData: FormData) {
     const data = {
-        email: formData.get("email")?.toString() ?? null,
-        username: formData.get("username")?.toString() ?? null,
-        password: formData.get("password")?.toString() ?? null,
+        email: formData.get("email"),
+        username: formData.get("username"),
+        password: formData.get("password"),
     };
 
     const result = formSchema.safeParse(data);
@@ -36,13 +25,9 @@ export default async function handleLoginForm(prevState: FormState, formData: Fo
     if (!result.success) {
         return {
             success: false,
-            data,
             fieldErrors: result.error.flatten().fieldErrors,
         };
     }
 
-    return {
-        success: true,
-        data,
-    };
+    return { success: true };
 }
