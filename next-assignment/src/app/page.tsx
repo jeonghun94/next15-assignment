@@ -9,9 +9,15 @@ import Message from "./components/Message";
 export default function Home() {
     const [state, action] = useActionState(handleLoginForm, null);
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.target as HTMLFormElement);
+        action(formData);
+    };
+
     return (
-        <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-            <form className="flex flex-col gap-4" action={action}>
+        <div className="w-full h-screen flex flex-col items-center justify-center gap-4 ">
+            <form className="flex flex-col gap-4 w-1/5" onSubmit={handleSubmit}>
                 <FormInput placeholder="이메일" type="email" name="email" errors={state?.fieldErrors?.email} />
                 <FormInput
                     placeholder="사용자 이름"
