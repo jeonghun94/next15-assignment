@@ -1,21 +1,48 @@
 "use server";
 
-export default async function handleLoginForm(prevState: any, formData: FormData) {
-    try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+import { z } from "zod";
 
-        const email = formData.get("email");
-        const username = formData.get("username");
-        const password = formData.get("password");
+const checkEmail = (email: string) => email.includes("@zod.com");
 
-        return {
-            success: password === "12345",
-            data: { email, username, password },
-        };
-    } catch (error) {
+const formSchema = z.object({
+    email: z.string().email().refine(checkEmail, { message: "Only @zod.com email is allowed" }),
+    username: z.string().min(5, { message: "Username must be at least 5 characters long" }),
+    password: z.string().min(10, { message: "Password must be at least 10 characters long" }),
+});
+
+type FormState = {
+    success: boolean;
+    data?: {
+        email: string | null;
+        username: string | null;
+        password: string | null;
+    };
+    fieldErrors?: {
+        email?: string[];
+        username?: string[];
+        password?: string[];
+    };
+};
+
+export default async function handleLoginForm(prevState: FormState, formData: FormData): Promise<FormState> {
+    const data = {
+        email: formData.get("email")?.toString() ?? null,
+        username: formData.get("username")?.toString() ?? null,
+        password: formData.get("password")?.toString() ?? null,
+    };
+
+    const result = formSchema.safeParse(data);
+
+    if (!result.success) {
         return {
             success: false,
-            error: "Form submission failed",
+            data,
+            fieldErrors: result.error.flatten().fieldErrors,
         };
     }
+
+    return {
+        success: true,
+        data,
+    };
 }
