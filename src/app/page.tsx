@@ -27,8 +27,11 @@ export default async function Home({ searchParams }: { searchParams: { page: str
 
     return (
         <div className="flex flex-col gap-1 items-center justify-center">
-            <h1>HOME</h1>
+            {/* <AddTweet /> */}
 
+            <Link href="/add-tweet" className=" bg-red-500 text-white rounded-md p-1">
+                Add Tweet
+            </Link>
             {tweets.map((tweet) => (
                 <Link href={`/tweet/${tweet.id}`} className="border-2 border-stone-300 rounded-md p-1" key={tweet.id}>
                     <p>{tweet.tweet}</p>
